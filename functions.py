@@ -12,19 +12,30 @@ browser = webdriver.Chrome()
 def acessarSite(link):
     browser.get(link)
 
-def criarLegendas():
-    tituloLiturgia = obterTituloLitugia() 
-    diaLiturgia = obterDiaLiturgia(tituloLiturgia)
+def obterLegendas():
+    diaSemana = obterDiaSemana() 
+    diaLiturgia = obterDiaLiturgia(diaSemana)
     print(diaLiturgia)
-    #while diaLiturgia != 1:
-    tempoLiturgico = obterTempoLiturgico()
-    print(tempoLiturgico)
+    controle = True
+    mesLiturgias = []
+    #while diaLiturgia != 1 or controle:
+    while controle:
+        tempoLiturgico = obterTempoLiturgico()
+        print(tempoLiturgico)
+        liturgias = obterLiturgias()
+        print(liturgias)
+        liturgias.insert(0,tempoLiturgico[1])
+        liturgias.insert(0,tempoLiturgico[0])
+        liturgias.insert(0,diaSemana)
+        mesLiturgias.append(liturgias)
+        print(mesLiturgias)
+        controle = False
     
-def obterTituloLitugia():
+def obterDiaSemana():
     tituloHTML = browser.find_element("xpath",'//*[@id="interno"]/div[2]')
     titulouterHTML = tituloHTML.get_attribute('outerHTML')
     tituloParse = BeautifulSoup(titulouterHTML,'html.parser')
-    return tituloParse.text
+    return tituloParse.get_text(strip=True)
 
 def obterDiaLiturgia(tituloLiturgia):
     dia = ''
@@ -42,6 +53,28 @@ def obterTempoLiturgico():
     corTempoLiturgico = p[1].text
     return tempoLiturgico, corTempoLiturgico
 
+def obterLiturgias():
+    liturgiasHTML = browser.find_element("tag name",'body')
+    liturgiasOuterHTML = liturgiasHTML.get_attribute('outerHTML')
+    liturgiasParse = BeautifulSoup(liturgiasOuterHTML,'html.parser')
+    liturgias = liturgiasParse.findAll("div", {"class": "subtitulo-liturgia"})
+    respostaSalmo = obterRespostaSalmo(liturgias) 
+    liturgias.append(respostaSalmo)
+    i = 0; 
+    for liturgia in liturgias:
+        liturgias[i] = liturgia.text
+        i = i + 1
+    return liturgias
+
+def obterRespostaSalmo(liturgias):
+    i = 0
+    for liturgia in liturgias:
+        if "Salmo" in liturgia.text or "Sl" in liturgia.text:
+            next = liturgias[i].next_sibling
+            next = next.next_sibling
+            respostaSalmo = next.next_sibling
+            return respostaSalmo
+        i = i + 1
 
 def fecharBrowser():
     browser.close()
