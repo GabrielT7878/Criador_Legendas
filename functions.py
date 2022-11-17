@@ -13,25 +13,29 @@ def acessarSite(link):
     browser.get(link)
 
 def obterLegendas():
-    diaSemana = obterDiaSemana() 
-    diaLiturgia = obterDiaLiturgia(diaSemana)
+    tituloDiaSemana = obterTituloDiaSemana() 
+    diaLiturgia = obterDiaLiturgia(tituloDiaSemana)
     print(diaLiturgia)
-    controle = True
-    mesLiturgias = []
+    controle = 0
+    infoLiturgias = []
     #while diaLiturgia != 1 or controle:
-    while controle:
+    while controle < 3:
         tempoLiturgico = obterTempoLiturgico()
         print(tempoLiturgico)
-        liturgias = obterLiturgias()
-        print(liturgias)
-        liturgias.insert(0,tempoLiturgico[1])
-        liturgias.insert(0,tempoLiturgico[0])
-        liturgias.insert(0,diaSemana)
-        mesLiturgias.append(liturgias)
-        print(mesLiturgias)
-        controle = False
+        liturgia = obterLiturgia()
+        print(liturgia)
+        liturgia.insert(0,tempoLiturgico[1])
+        liturgia.insert(0,tempoLiturgico[0])
+        liturgia.insert(0,tituloDiaSemana)
+        infoLiturgias.append(liturgia)
+        print(infoLiturgias)
+        linkProximaPagina = proximaPagina()
+        browser.get(linkProximaPagina)
+        tituloDiaSemana = obterTituloDiaSemana() 
+        diaLiturgia = obterDiaLiturgia(tituloDiaSemana)
+        controle = controle + 1
     
-def obterDiaSemana():
+def obterTituloDiaSemana():
     tituloHTML = browser.find_element("xpath",'//*[@id="interno"]/div[2]')
     titulouterHTML = tituloHTML.get_attribute('outerHTML')
     tituloParse = BeautifulSoup(titulouterHTML,'html.parser')
@@ -53,7 +57,7 @@ def obterTempoLiturgico():
     corTempoLiturgico = p[1].text
     return tempoLiturgico, corTempoLiturgico
 
-def obterLiturgias():
+def obterLiturgia():
     liturgiasHTML = browser.find_element("tag name",'body')
     liturgiasOuterHTML = liturgiasHTML.get_attribute('outerHTML')
     liturgiasParse = BeautifulSoup(liturgiasOuterHTML,'html.parser')
@@ -75,6 +79,13 @@ def obterRespostaSalmo(liturgias):
             respostaSalmo = next.next_sibling
             return respostaSalmo
         i = i + 1
+
+def proximaPagina():
+    botaoProximaPaginaHTML = browser.find_element('id','nextpost')
+    botaoProximaPaginaOuterHTML = botaoProximaPaginaHTML.get_attribute('outerHTML')
+    botaoProximaPaginaParse = BeautifulSoup(botaoProximaPaginaOuterHTML,'html.parser')
+    linkProximaPagina = botaoProximaPaginaParse.find('a')
+    return linkProximaPagina['href']
 
 def fecharBrowser():
     browser.close()
