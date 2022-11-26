@@ -5,6 +5,7 @@ import pandas as pd
 import html5lib
 from selenium.webdriver.common.keys import Keys
 import os.path
+from criarImagens import *
 
 
 browser = webdriver.Chrome()
@@ -15,26 +16,27 @@ def acessarSite(link):
 def obterLegendas():
     tituloDiaSemana = obterTituloDiaSemana() 
     diaLiturgia = obterDiaLiturgia(tituloDiaSemana)
-    print(diaLiturgia)
     controle = 0
     infoLiturgias = []
-    #while diaLiturgia != 1 or controle:
-    while controle < 3:
-        tempoLiturgico = obterTempoLiturgico()
-        print(tempoLiturgico)
-        liturgia = obterLiturgia()
-        print(liturgia)
-        liturgia.insert(0,tempoLiturgico[1])
-        liturgia.insert(0,tempoLiturgico[0])
-        liturgia.insert(0,tituloDiaSemana)
-        infoLiturgias.append(liturgia)
-        print(infoLiturgias)
+    litugia = []
+    quarta_feira = str("QUARTA-FEIRA")
+    domingo = str("DOMINGO")
+    while controle < 31: #diaLiturgia != 1 or  
+        if quarta_feira in (tituloDiaSemana.upper)() or domingo in (tituloDiaSemana.upper)():
+            tempoLiturgico = obterTempoLiturgico()
+            liturgia = obterLiturgia()
+            liturgia.insert(0,tempoLiturgico[1])
+            liturgia.insert(0,tempoLiturgico[0])
+            liturgia.insert(0,tituloDiaSemana)
+            infoLiturgias.append(liturgia)
+            
         linkProximaPagina = proximaPagina()
         browser.get(linkProximaPagina)
         tituloDiaSemana = obterTituloDiaSemana() 
         diaLiturgia = obterDiaLiturgia(tituloDiaSemana)
         controle = controle + 1
-    
+    return infoLiturgias
+
 def obterTituloDiaSemana():
     tituloHTML = browser.find_element("xpath",'//*[@id="interno"]/div[2]')
     titulouterHTML = tituloHTML.get_attribute('outerHTML')
@@ -54,7 +56,12 @@ def obterTempoLiturgico():
     tempoLiturgicoParse = BeautifulSoup(tempoLiturgicoOuterHTML,'html.parser')
     p = tempoLiturgicoParse.findAll('p')
     tempoLiturgico = p[0].text
-    corTempoLiturgico = p[1].text
+    i = 0
+    while not str('(') in p[i].text:
+        i = i + 1
+        if i == len(p)+1:
+            break 
+    corTempoLiturgico = p[i].text
     return tempoLiturgico, corTempoLiturgico
 
 def obterLiturgia():
@@ -68,6 +75,11 @@ def obterLiturgia():
     for liturgia in liturgias:
         liturgias[i] = liturgia.text
         i = i + 1
+    j = 0 
+    for i in liturgias:
+        if i == "Reflexão:":
+            liturgias.pop(j)
+        j = j + 1
     return liturgias
 
 def obterRespostaSalmo(liturgias):
@@ -86,6 +98,8 @@ def proximaPagina():
     botaoProximaPaginaParse = BeautifulSoup(botaoProximaPaginaOuterHTML,'html.parser')
     linkProximaPagina = botaoProximaPaginaParse.find('a')
     return linkProximaPagina['href']
+
+
 
 def fecharBrowser():
     browser.close()

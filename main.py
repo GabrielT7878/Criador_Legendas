@@ -4,9 +4,10 @@ link = "https://www.paulus.com.br/portal/liturgia-diaria/#.YzxZEtLMLJ-"
 
 def main():
     acessarSite(link)
-    obterLegendas()
-    
+    infoLiturgias = obterLegendas()
+    for liturgia in infoLiturgias:
+        criarImagens(liturgia)
 
-    fecharBrowser()
+    #fecharBrowser()
 
 main()
