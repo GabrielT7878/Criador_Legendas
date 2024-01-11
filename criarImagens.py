@@ -2,7 +2,6 @@ from PIL import Image, ImageFont, ImageDraw
 import os
 
 
-
 def criarImagens(infoLiturgia):
     os.mkdir(f'./{infoLiturgia[0]}')
     #create a file with the information
@@ -19,7 +18,7 @@ def criarImagens(infoLiturgia):
             if str(infoLiturgia[1][1]).isdigit():
                 infoLiturgia[1] = infoLiturgia[1][:3] + " DOMINGO" + infoLiturgia[1][3:]
             else:
-                infoLiturgia[1] = infoLiturgia[1][:2] + " DOMINGO" + infoLiturgia[1][2:]
+                infoLiturgia[1] = infoLiturgia[1][:2]  + " DOMINGO" + infoLiturgia[1][2:]
     else:
         segundaLeitura = ""
     evangelho = infoLiturgia[len(infoLiturgia)-2]
@@ -49,7 +48,7 @@ def criarImagens(infoLiturgia):
 
     cordSalmo = (50,56)
     liturgia = [["Primeira Leitura",primeiraLeitura],["Salmo",salmo],["Segunda Leitura",segundaLeitura],["Evangelho",evangelho]]
-    outrosCards = ["Canto de Entrada","Ato Penitencial","Glória a Deus","Rito do Ofertório","Canto da Comunhão","Preces da Assembleia"]
+    outrosCards = ["Canto de Entrada","Ato Penitencial","Glória a Deus","Canto da Comunhão","Rito do Ofertório","Preces da Assembleia","Liturgia Eucarística","Ato Penitencial","Profissão de Fé","Preparação das Oferendas","Oração Eucarística","Rito da Comunhão"]
 
 
     cordTempoLiturgico = (145,62)
@@ -68,12 +67,12 @@ def criarImagens(infoLiturgia):
             if len(respostaSalmo) > 55:
                 index = respostaSalmo[:55].rfind(" ")
                 fontSalmo = ImageFont.truetype(caminho_fonte, 18, encoding='utf-8')
-                cordSalmo = (50,52)
                 Salmo = respostaSalmo
                 respostaSalmo = respostaSalmo[:index]
                 meio = 325
                 test = len(respostaSalmo)
                 meio = meio - (test * 5)
+                cordSalmo = (meio,52)
                 desenho.text(cordSalmo, respostaSalmo, font=fontSalmo, fill=colorText2)
                 meio = 325
                 test = len(Salmo[index:])
@@ -106,4 +105,3 @@ def criarImagens(infoLiturgia):
         image.close()
         
 print("Finalizado")
-

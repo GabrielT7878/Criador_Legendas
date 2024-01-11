@@ -21,20 +21,18 @@ def obterLegendas():
     litugia = []
     quarta_feira = str("QUARTA-FEIRA")
     domingo = str("DOMINGO")
-    while controle < 31: #diaLiturgia != 1 or  
-        if quarta_feira in (tituloDiaSemana.upper)() or domingo in (tituloDiaSemana.upper)():
+    while controle < 7: #diaLiturgia != 1 or  
             tempoLiturgico = obterTempoLiturgico()
             liturgia = obterLiturgia()
             liturgia.insert(0,tempoLiturgico[1])
             liturgia.insert(0,tempoLiturgico[0])
             liturgia.insert(0,tituloDiaSemana)
             infoLiturgias.append(liturgia)
-            
-        linkProximaPagina = proximaPagina()
-        browser.get(linkProximaPagina)
-        tituloDiaSemana = obterTituloDiaSemana() 
-        diaLiturgia = obterDiaLiturgia(tituloDiaSemana)
-        controle = controle + 1
+            linkProximaPagina = proximaPagina()
+            browser.get(linkProximaPagina)
+            tituloDiaSemana = obterTituloDiaSemana() 
+            diaLiturgia = obterDiaLiturgia(tituloDiaSemana)
+            controle = controle + 1
     return infoLiturgias
 
 def obterTituloDiaSemana():
